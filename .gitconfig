@@ -1,0 +1,14 @@
+[user]
+    email = me@siriuskoan.one
+    name = SiriusKoan
+[http]
+    sslVerify = false
+[color]
+    ui = true
+[alias]
+    lg = log --color --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+    st = status -s -uall
+    r = remote -v
+    br = branch
+[core]
+    editor = vim
