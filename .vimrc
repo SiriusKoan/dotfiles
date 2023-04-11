@@ -100,7 +100,7 @@ Plug 'sheerun/vim-polyglot'
 " Paint css colors with the real color
 Plug 'lilydjwg/colorizer'
 " Highlight matching html tags
-Plug 'valloric/MatchTagAlways'
+"Plug 'valloric/MatchTagAlways'
 " Generate html in a simple way
 Plug 'mattn/emmet-vim'
 " Git integration
@@ -112,7 +112,8 @@ Plug 'neomake/neomake'
 " Nice icons in the file explorer and file type status line.
 Plug 'ryanoasis/vim-devicons'
 " colorscheme
-Plug 'rakr/vim-one'
+"Plug 'rakr/vim-one'
+Plug 'pineapplegiant/spaceduck', { 'branch': 'main' }
 if using_vim
     " Consoles as buffers (neovim has its own consoles as buffers)
     Plug 'rosenfeld/conque-term'
@@ -196,7 +197,8 @@ set fillchars+=vert:\
 " use 256 colors when possible
 set t_Co=256
 " colorscheme one
-colorscheme spring-night
+"colorscheme spring-night
+colorscheme spaceduck
 
 " needed so deoplete can auto select the first suggestion
 set completeopt+=noinsert
@@ -347,7 +349,8 @@ endif
 
 let g:airline_powerline_fonts = 0
 " let g:airline_theme = 'one'
-let g:airline_theme = 'spring_night'
+"let g:airline_theme = 'spring_night'
+let g:airline_theme = 'spaceduck'
 let g:airline#extensions#whitespace#enabled = 0
 
 " Fancy Symbols!!
@@ -394,3 +397,5 @@ endif
 
 set visualbell
 set t_vb=
+
+noremap! <C-?> <C-h>
