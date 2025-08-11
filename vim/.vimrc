@@ -73,9 +73,6 @@ endif
 Plug 'arielrossanigo/dir-configs-override.vim'
 " Code commenter
 Plug 'scrooloose/nerdcommenter'
-" C
-autocmd BufNewFile  *.c 0r ~/.vim/templates/template.c | +10
-autocmd BufNewFile  *.cpp 0r ~/.vim/templates/template.cpp | +19
 " Better file browser
 Plug 'scrooloose/nerdtree'
 " Search results counter

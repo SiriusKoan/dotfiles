@@ -1,6 +1,13 @@
 [user]
     email = me@siriuskoan.one
     name = SiriusKoan
+    signingkey = ~/.ssh/id_ed25519
+[init]
+	defaultBranch = main
+[gpg]
+    format = ssh
+[commit]
+    gpgsign = true
 [http]
     sslVerify = false
 [color]
@@ -10,5 +17,14 @@
     st = status -s -uall
     r = remote -v
     br = branch
+    cm = commit -s
 [core]
     editor = vim
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[IncludeIf "gitdir:/home/siriuskoan/cc/"]
+    path = .gitconfig-cc
+
