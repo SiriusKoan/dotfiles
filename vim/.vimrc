@@ -1,398 +1,383 @@
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Maintainer:
+"       Amir Salihefendic - @amix3k
+"
+" Awesome_version:
+"       Get this config, nice color schemes and lots of plugins!
+"
+"       Install the awesome version from:
+"
+"           https://github.com/amix/vimrc
+"
+" Sections:
+"    -> General
+"    -> VIM user interface
+"    -> Colors and Fonts
+"    -> Files and backups
+"    -> Text, tab and indent related
+"    -> Visual mode related
+"    -> Moving around, tabs and buffers
+"    -> Status line
+"    -> Editing mappings
+"    -> vimgrep searching and cope displaying
+"    -> Spell checking
+"    -> Misc
+"    -> Helper functions
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Fisa-vim-config, a config for both Vim and NeoVim
-" http://vim.fisadev.com
-" version: 12.0.1
 
-" To use fancy symbols wherever possible, change this setting from 0 to 1
-" and use a font from https://github.com/ryanoasis/nerd-fonts in your terminal 
-" (if you aren't using one of those fonts, you will see funny characters here. 
-" Turst me, they look nice when using one of those fonts).
-let fancy_symbols_enabled = 0
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => General
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Sets how many lines of history VIM has to remember
+set history=500
 
-set mouse=a
-set encoding=utf-8
-let using_neovim = has('nvim')
-let using_vim = !using_neovim
+" Enable filetype plugins
+filetype plugin on
+filetype indent on
+
+" Set to auto read when a file is changed from the outside
+set autoread
+au FocusGained,BufEnter * silent! checktime
+
+" With a map leader it's possible to do extra key combinations
+" like <leader>w saves the current file
+let mapleader = ","
+
+" Fast saving
+nmap <leader>w :w!<cr>
+
+" :W sudo saves the file
+" (useful for handling the permission-denied error)
+command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => VIM user interface
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Set 7 lines to the cursor - when moving vertically using j/k
+set so=7
+
+" Avoid garbled characters in Chinese language windows OS
+let $LANG='en'
+set langmenu=en
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+
+" Turn on the Wild menu
+set wildmenu
+
+" Ignore compiled files
+set wildignore=*.o,*~,*.pyc
+if has("win16") || has("win32")
+    set wildignore+=.git\*,.hg\*,.svn\*
+else
+    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+endif
+
+" Always show current position
+set ruler
+
+" Height of the command bar
+set cmdheight=1
+
+" A buffer becomes hidden when it is abandoned
+set hid
+
+" Configure backspace so it acts as it should act
+set backspace=eol,start,indent
+set whichwrap+=<,>,h,l
+
+" Ignore case when searching
+set ignorecase
+
+" When searching try to be smart about cases
+set smartcase
+
+" Highlight search results
+set hlsearch
+
+" Makes search act like search in modern browsers
+set incsearch
+
+" Don't redraw while executing macros (good performance config)
+set lazyredraw
+
+" For regular expressions turn magic on
+set magic
+
+" Show matching brackets when text indicator is over them
+set showmatch
+
+" How many tenths of a second to blink when matching brackets
+set mat=2
+
+" No annoying sound on errors
+set noerrorbells
+set novisualbell
+set t_vb=
+set tm=500
+
+" Properly disable sound on errors on MacVim
+if has("gui_macvim")
+    autocmd GUIEnter * set vb t_vb=
+endif
+
+" Add a bit extra margin to the left
+set foldcolumn=1
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Colors and Fonts
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Enable syntax highlighting
+syntax enable
+
+" Set regular expression engine automatically
+set regexpengine=0
+
+" Enable 256 colors palette in Gnome Terminal
+if $COLORTERM == 'gnome-terminal'
+    set t_Co=256
+endif
+
+colorscheme habamax
+
 set background=dark
 
-" C
-let  g:C_UseTool_cmake    = 'yes'
-let  g:C_UseTool_doxygen = 'yes'
-inoremap {<cr> {<cr>}<c-o>O
-inoremap [<cr> [<cr>]<c-o>O
-inoremap (<cr> (<cr>)<c-o>O<tab>
-
-" ============================================================================
-" Vim-plug initialization
-" Avoid modifying this section, unless you are very sure of what you are doing
-
-let vim_plug_just_installed = 0
-if using_neovim
-    let vim_plug_path = expand('~/.config/nvim/autoload/plug.vim')
-else
-    let vim_plug_path = expand('~/.vim/autoload/plug.vim')
-endif
-if !filereadable(vim_plug_path)
-    echo "Installing Vim-plug..."
-    echo ""
-    if using_neovim
-        silent !mkdir -p ~/.config/nvim/autoload
-        silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    else
-        silent !mkdir -p ~/.vim/autoload
-        silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    endif
-    let vim_plug_just_installed = 1
+" Set extra options when running in GUI mode
+if has("gui_running")
+    set guioptions-=T
+    set guioptions-=e
+    set t_Co=256
+    set guitablabel=%M\ %t
 endif
 
-" manually load vim-plug the first time
-if vim_plug_just_installed
-    :execute 'source '.fnameescape(vim_plug_path)
-endif
+" Set utf8 as standard encoding and en_US as the standard language
+set encoding=utf8
 
-" Obscure hacks done, you can now modify the rest of the config down below 
-" as you wish :)
-" IMPORTANT: some things in the config are vim or neovim specific. It's easy 
-" to spot, they are inside `if using_vim` or `if using_neovim` blocks.
+" Use Unix as the standard file type
+set ffs=unix,dos,mac
 
-" ============================================================================
-" Active plugins
-" You can disable or add new ones here:
 
-" this needs to be here, so vim-plug knows we are declaring the plugins we
-" want to use
-if using_neovim
-    call plug#begin("~/.config/nvim/plugged")
-else
-    call plug#begin("~/.vim/plugged")
-endif
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Files, backups and undo
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Turn backup off, since most stuff is in SVN, git etc. anyway...
+set nobackup
+set nowb
+set noswapfile
 
-" Now the actual plugins:
 
-" Override configs by directory
-Plug 'arielrossanigo/dir-configs-override.vim'
-" Code commenter
-Plug 'scrooloose/nerdcommenter'
-" Better file browser
-Plug 'scrooloose/nerdtree'
-" Search results counter
-Plug 'vim-scripts/IndexedSearch'
-" A couple of nice colorschemes
-" Plug 'fisadev/fisa-vim-colorscheme'
-Plug 'rhysd/vim-color-spring-night'
-Plug 'patstockwell/vim-monokai-tasty'
-" Airline
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-" Automatically close parenthesis, etc
-Plug 'Townk/vim-autoclose'
-" Surround
-Plug 'tpope/vim-surround'
-" Indent text object
-Plug 'michaeljsmith/vim-indent-object'
-" Indentation based movements
-Plug 'jeetsukumaran/vim-indentwise'
-" Better language packs
-Plug 'sheerun/vim-polyglot'
-" Paint css colors with the real color
-Plug 'lilydjwg/colorizer'
-" Highlight matching html tags
-"Plug 'valloric/MatchTagAlways'
-" Generate html in a simple way
-Plug 'mattn/emmet-vim'
-" Git integration
-Plug 'tpope/vim-fugitive'
-" Git/mercurial/others diff icons on the side of the file lines
-Plug 'mhinz/vim-signify'
-" Linters
-Plug 'neomake/neomake'
-" Nice icons in the file explorer and file type status line.
-Plug 'ryanoasis/vim-devicons'
-" colorscheme
-"Plug 'rakr/vim-one'
-Plug 'pineapplegiant/spaceduck', { 'branch': 'main' }
-if using_vim
-    " Consoles as buffers (neovim has its own consoles as buffers)
-    Plug 'rosenfeld/conque-term'
-    " XML/HTML tags navigation (neovim has its own)
-    Plug 'vim-scripts/matchit.zip'
-endif
-
-" Code searcher. If you enable it, you should also configure g:hound_base_url 
-" and g:hound_port, pointing to your hound instance
-" Plug 'mattn/webapi-vim'
-" Plug 'jfo/hound.vim'
-
-" Tell vim-plug we finished declaring plugins, so it can load them
-call plug#end()
-
-" ============================================================================
-" Install plugins the first time vim runs
-
-if vim_plug_just_installed
-    echo "Installing Bundles, please ignore key map error messages"
-    :PlugInstall
-endif
-
-" ============================================================================
-" Vim settings and mappings
-" You can edit them as you wish
- 
-if using_vim
-    " A bunch of things that are set by default in neovim, but not in vim
-
-    " no vi-compatible
-    set nocompatible
-
-    " allow plugins by file type (required for plugins!)
-    filetype plugin on
-    filetype indent on
-
-    " always show status bar
-    set ls=2
-
-    " incremental search
-    set incsearch
-    " highlighted search results
-    set hlsearch
-
-    " syntax highlight on
-    syntax on
-
-    " better backup, swap and undos storage for vim (nvim has nice ones by
-    " default)
-    set directory=~/.vim/dirs/tmp     " directory to place swap files in
-    set backup                        " make backup files
-    set backupdir=~/.vim/dirs/backups " where to put backup files
-    set undofile                      " persistent undos - undo after you re-open the file
-    set undodir=~/.vim/dirs/undos
-    set viminfo+=n~/.vim/dirs/viminfo
-    " create needed directories if they don't exist
-    if !isdirectory(&backupdir)
-        call mkdir(&backupdir, "p")
-    endif
-    if !isdirectory(&directory)
-        call mkdir(&directory, "p")
-    endif
-    if !isdirectory(&undodir)
-        call mkdir(&undodir, "p")
-    endif
-end
-
-" tabs and spaces handling
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Text, tab and indent related
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Use spaces instead of tabs
 set expandtab
-set tabstop=4
-set softtabstop=4
+
+" Be smart when using tabs ;)
+set smarttab
+
+" 1 tab == 4 spaces
 set shiftwidth=4
+set tabstop=4
 
-" show line numbers
-set nu
+" Linebreak on 500 characters
+set lbr
+set tw=500
 
-" remove ugly vertical lines on window division
-set fillchars+=vert:\ 
+set ai "Auto indent
+set si "Smart indent
+set wrap "Wrap lines
 
-" use 256 colors when possible
-set t_Co=256
-" colorscheme one
-"colorscheme spring-night
-colorscheme spaceduck
 
-" needed so deoplete can auto select the first suggestion
-set completeopt+=noinsert
-" comment this line to enable autocompletion preview window
-" (displays documentation related to the selected completion option)
-" disabled by default because preview makes the window flicker
-set completeopt-=preview
+""""""""""""""""""""""""""""""
+" => Visual mode related
+""""""""""""""""""""""""""""""
+" Visual mode pressing * or # searches for the current selection
+" Super useful! From an idea by Michael Naumann
+vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
+vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
-" autocompletion of files and commands behaves like shell
-" (complete only the common part, list the options that match)
-set wildmode=list:longest
 
-" save as sudo
-ca w!! w !sudo tee "%"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Moving around, tabs, windows and buffers
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
+map <space> /
+map <C-space> ?
 
-" tab navigation mappings
-map tt :tabnew 
-map <M-Right> :tabn<CR>
-imap <M-Right> <ESC>:tabn<CR>
-map <M-Left> :tabp<CR>
-imap <M-Left> <ESC>:tabp<CR>
+" Disable highlight when <leader><cr> is pressed
+map <silent> <leader><cr> :noh<cr>
 
-" when scrolling, keep cursor 3 lines away from screen border
-set scrolloff=3
+" Smart way to move between windows
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
 
-" clear search results
-nnoremap <silent> // :noh<CR>
+" Close the current buffer
+map <leader>bd :Bclose<cr>:tabclose<cr>gT
 
-" clear empty spaces at the end of lines on save of python files
-autocmd BufWritePre *.py :%s/\s\+$//e
+" Close all the buffers
+map <leader>ba :bufdo bd<cr>
 
-" fix problems with uncommon shells (fish, xonsh) and plugins running commands
-" (neomake, ...)
-set shell=/bin/bash 
+map <leader>l :bnext<cr>
+map <leader>h :bprevious<cr>
 
-" ============================================================================
-" Plugins settings and mappings
-" Edit them as you wish.
+" Useful mappings for managing tabs
+map <leader>tn :tabnew<cr>
+map <leader>to :tabonly<cr>
+map <leader>tc :tabclose<cr>
+map <leader>tm :tabmove
+map <leader>t<leader> :tabnext<cr>
 
-" Tagbar -----------------------------
+" Let 'tl' toggle between this and the last accessed tab
+let g:lasttab = 1
+nmap <leader>tl :exe "tabn ".g:lasttab<CR>
+au TabLeave * let g:lasttab = tabpagenr()
 
-" toggle tagbar display
-map <F4> :TagbarToggle<CR>
-" autofocus on tagbar open
-let g:tagbar_autofocus = 1
 
-" NERDTree -----------------------------
-nnoremap <leader>n :NERDTreeFocus<CR>
-nnoremap <C-n> :NERDTree<CR>
-nnoremap <C-t> :NERDTreeToggle<CR>
-nnoremap <C-f> :NERDTreeFind<CR>
-" don;t show these file types
-let NERDTreeIgnore = ['\.pyc$', '\.pyo$']
+" Opens a new tab with the current buffer's path
+" Super useful when editing files in the same directory
+map <leader>te :tabedit <C-r>=escape(expand("%:p:h"), " ")<cr>/
 
-" Enable folder icons
-let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-let g:DevIconsEnableFoldersOpenClose = 1
+" Switch CWD to the directory of the open buffer
+map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" Fix directory colors
-highlight! link NERDTreeFlags NERDTreeDir
+" Specify the behavior when switching between buffers
+try
+  set switchbuf=useopen,usetab,newtab
+  set stal=2
+catch
+endtry
 
-" Remove expandable arrow
-let g:WebDevIconsNerdTreeBeforeGlyphPadding = ""
-let g:WebDevIconsUnicodeDecorateFolderNodes = v:true
-let NERDTreeDirArrowExpandable = "\u00a0"
-let NERDTreeDirArrowCollapsible = "\u00a0"
-let NERDTreeNodeDelimiter = "\x07"
+" Return to last edit position when opening files (You want this!)
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-" Autorefresh on tree focus
-function! NERDTreeRefresh()
-    if &filetype == "nerdtree"
-        silent exe substitute(mapcheck("R"), "<CR>", "", "")
+
+""""""""""""""""""""""""""""""
+" => Status line
+""""""""""""""""""""""""""""""
+" Always show the status line
+set laststatus=2
+
+" Format the status line
+set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Editing mappings
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Remap VIM 0 to first non-blank character
+map 0 ^
+
+" Move a line of text using ALT+[jk] or Command+[jk] on mac
+nmap <M-j> mz:m+<cr>`z
+nmap <M-k> mz:m-2<cr>`z
+vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
+vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
+
+if has("mac") || has("macunix")
+  nmap <D-j> <M-j>
+  nmap <D-k> <M-k>
+  vmap <D-j> <M-j>
+  vmap <D-k> <M-k>
+endif
+
+" Delete trailing white space on save, useful for some filetypes ;)
+fun! CleanExtraSpaces()
+    let save_cursor = getpos(".")
+    let old_query = getreg('/')
+    silent! %s/\s\+$//e
+    call setpos('.', save_cursor)
+    call setreg('/', old_query)
+endfun
+
+if has("autocmd")
+    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
+endif
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Spell checking
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Pressing ,ss will toggle and untoggle spell checking
+map <leader>ss :setlocal spell!<cr>
+
+" Shortcuts using <leader>
+map <leader>sn ]s
+map <leader>sp [s
+map <leader>sa zg
+map <leader>s? z=
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Misc
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Remove the Windows ^M - when the encodings gets messed up
+noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
+
+" Quickly open a buffer for scribble
+map <leader>q :e ~/buffer<cr>
+
+" Quickly open a markdown buffer for scribble
+map <leader>x :e ~/buffer.md<cr>
+
+" Toggle paste mode on and off
+map <leader>pp :setlocal paste!<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Helper functions
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Returns true if paste mode is enabled
+function! HasPaste()
+    if &paste
+        return 'PASTE MODE  '
+    endif
+    return ''
+endfunction
+
+" Don't close window, when deleting a buffer
+command! Bclose call <SID>BufcloseCloseIt()
+function! <SID>BufcloseCloseIt()
+    let l:currentBufNum = bufnr("%")
+    let l:alternateBufNum = bufnr("#")
+
+    if buflisted(l:alternateBufNum)
+        buffer #
+    else
+        bnext
+    endif
+
+    if bufnr("%") == l:currentBufNum
+        new
+    endif
+
+    if buflisted(l:currentBufNum)
+        execute("bdelete! ".l:currentBufNum)
     endif
 endfunction
 
-autocmd BufEnter * call NERDTreeRefresh()
+function! CmdLine(str)
+    call feedkeys(":" . a:str)
+endfunction
 
-" Tasklist ------------------------------
+function! VisualSelection(direction, extra_filter) range
+    let l:saved_reg = @"
+    execute "normal! vgvy"
 
-" show pending tasks list
-map <F2> :TaskList<CR>
+    let l:pattern = escape(@", "\\/.*'$^~[]")
+    let l:pattern = substitute(l:pattern, "\n$", "", "")
 
-" Neomake ------------------------------
-
-" Run linter on write
-autocmd! BufWritePost * Neomake
-
-" Check code as python3 by default
-let g:neomake_python_python_maker = neomake#makers#ft#python#python()
-let g:neomake_python_flake8_maker = neomake#makers#ft#python#flake8()
-let g:neomake_python_python_maker.exe = 'python3 -m py_compile'
-let g:neomake_python_flake8_maker.exe = 'python3 -m flake8'
-
-" Disable error messages inside the buffer, next to the problematic line
-let g:neomake_virtualtext_current_error = 0
-
-" Fzf ------------------------------
-
-" file finder mapping
-nmap ,e :Files<CR>
-" tags (symbols) in current file finder mapping
-nmap ,g :BTag<CR>
-" the same, but with the word under the cursor pre filled
-nmap ,wg :execute ":BTag " . expand('<cword>')<CR>
-" tags (symbols) in all files finder mapping
-nmap ,G :Tags<CR>
-" the same, but with the word under the cursor pre filled
-nmap ,wG :execute ":Tags " . expand('<cword>')<CR>
-" general code finder in current file mapping
-nmap ,f :BLines<CR>
-" the same, but with the word under the cursor pre filled
-nmap ,wf :execute ":BLines " . expand('<cword>')<CR>
-" general code finder in all files mapping
-nmap ,F :Lines<CR>
-" the same, but with the word under the cursor pre filled
-nmap ,wF :execute ":Lines " . expand('<cword>')<CR>
-" commands finder mapping
-nmap ,c :Commands<CR>
-
-" Signify ------------------------------
-
-" this first setting decides in which order try to guess your current vcs
-" UPDATE it to reflect your preferences, it will speed up opening files
-let g:signify_vcs_list = ['git', 'hg']
-" mappings to jump to changed blocks
-nmap <leader>sn <plug>(signify-next-hunk)
-nmap <leader>sp <plug>(signify-prev-hunk)
-" nicer colors
-highlight DiffAdd           cterm=bold ctermbg=none ctermfg=119
-highlight DiffDelete        cterm=bold ctermbg=none ctermfg=167
-highlight DiffChange        cterm=bold ctermbg=none ctermfg=227
-highlight SignifySignAdd    cterm=bold ctermbg=237  ctermfg=119
-highlight SignifySignDelete cterm=bold ctermbg=237  ctermfg=167
-highlight SignifySignChange cterm=bold ctermbg=237  ctermfg=227
-
-" Yankring -------------------------------
-
-if using_neovim
-    let g:yankring_history_dir = '~/.config/nvim/'
-    " Fix for yankring and neovim problem when system has non-text things
-    " copied in clipboard
-    let g:yankring_clipboard_monitor = 0
-else
-    let g:yankring_history_dir = '~/.vim/dirs/'
-endif
-
-" Airline ------------------------------
-
-let g:airline_powerline_fonts = 0
-" let g:airline_theme = 'one'
-"let g:airline_theme = 'spring_night'
-let g:airline_theme = 'spaceduck'
-let g:airline#extensions#whitespace#enabled = 0
-
-" Fancy Symbols!!
-
-if fancy_symbols_enabled
-    let g:webdevicons_enable = 1
-
-    " custom airline symbols
-    if !exists('g:airline_symbols')
-       let g:airline_symbols = {}
+    if a:direction == 'gv'
+        call CmdLine("Ack '" . l:pattern . "' " )
+    elseif a:direction == 'replace'
+        call CmdLine("%s" . '/'. l:pattern . '/')
     endif
-    let g:airline_left_sep = ''
-    let g:airline_left_alt_sep = ''
-    let g:airline_right_sep = ''
-    let g:airline_right_alt_sep = ''
-    let g:airline_symbols.branch = '⭠'
-    let g:airline_symbols.readonly = '⭤'
-    let g:airline_symbols.linenr = '⭡'
-else
-    let g:webdevicons_enable = 0
-endif
 
-" Custom configurations ----------------
-
-" Include user's custom nvim configurations
-if using_neovim
-    let custom_configs_path = "~/.config/nvim/custom.vim"
-else
-    let custom_configs_path = "~/.vim/custom.vim"
-endif
-if filereadable(expand(custom_configs_path))
-  execute "source " . custom_configs_path
-endif
-
-"" Auto Complete
-"set dictionary+=/home/siriuskoan/.vim-dict.txt
-"set complete-=i
-"set pumheight=5
-"highlight Pmenu ctermfg=15 ctermbg=55
-"highlight PmenuSel ctermfg=15 ctermbg=33
-"inoremap <C-x> <C-x><C-k>
-"autocmd CursorHoldI * :call feedkeys("\<C-n>", 'n')
-"set updatetime=1200
-
-set visualbell
-set t_vb=
-
-noremap! <C-?> <C-h>
+    let @/ = l:pattern
+    let @" = l:saved_reg
+endfunction
