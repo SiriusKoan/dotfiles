@@ -7,6 +7,8 @@ if status is-interactive
     alias bcat="batcat --theme TwoDark --paging always"
     alias xcopy='xclip -sel clip'
     alias dc='docker compose'
+    alias dce='docker compose exec -it'
+    alias tree='tree -C'
     # k8s
     alias kctx="kubectl config use-context"
     # nvm
