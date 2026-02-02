@@ -20,11 +20,6 @@
     cm = commit -s
 [core]
     editor = vim
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
 [IncludeIf "gitdir:/home/siriuskoan/cc/"]
     path = .gitconfig-cc
 
